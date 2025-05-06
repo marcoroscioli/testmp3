@@ -5,48 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MP3 Player</title>
     <style>
+        :root {
+            --bg-color: #f5f5f5;
+            --container-bg: #ffffff;
+            --text-color: #333333;
+            --heading-color: #2c3e50;
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --secondary-color: #2c3e50;
+            --secondary-hover: #1a252f;
+            --border-color: #3498db;
+            --upload-hover-bg: #f8f9fa;
+            --info-bg: #eaf2f8;
+            --muted-text: #7f8c8d;
+            --visualizer-bg: #2c3e50;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --heading-color: #81a1c1;
+            --primary-color: #5e81ac;
+            --primary-hover: #81a1c1;
+            --secondary-color: #4c566a;
+            --secondary-hover: #5e81ac;
+            --border-color: #5e81ac;
+            --upload-hover-bg: #2e3440;
+            --info-bg: #2e3440;
+            --muted-text: #a0a0a0;
+            --visualizer-bg: #2e3440;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f5f5f5;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
         }
         .container {
-            background-color: white;
+            background-color: var(--container-bg);
             border-radius: 10px;
             padding: 30px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px var(--shadow-color);
         }
         h1 {
-            color: #2c3e50;
+            color: var(--heading-color);
             text-align: center;
             margin-bottom: 30px;
+        }
+        .theme-switch-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .theme-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        .theme-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--secondary-color);
+            transition: .4s;
+            border-radius: 30px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+        .theme-icon {
+            margin: 0 10px;
+            font-size: 18px;
         }
         .upload-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            border: 2px dashed #3498db;
+            border: 2px dashed var(--border-color);
             border-radius: 8px;
             margin-bottom: 30px;
             transition: all 0.3s ease;
         }
         .upload-container:hover {
-            border-color: #2980b9;
-            background-color: #f8f9fa;
+            border-color: var(--primary-hover);
+            background-color: var(--upload-hover-bg);
         }
         .upload-container p {
             margin: 10px 0;
-            color: #7f8c8d;
+            color: var(--muted-text);
         }
         #file-input {
             display: none;
         }
         .upload-btn {
-            background-color: #3498db;
+            background-color: var(--primary-color);
             color: white;
             padding: 12px 24px;
             border: none;
@@ -56,7 +140,7 @@
             transition: background-color 0.3s ease;
         }
         .upload-btn:hover {
-            background-color: #2980b9;
+            background-color: var(--primary-hover);
         }
         .player-container {
             display: none;
@@ -65,21 +149,23 @@
         .audio-info {
             margin-bottom: 15px;
             padding: 10px;
-            background-color: #eaf2f8;
+            background-color: var(--info-bg);
             border-radius: 5px;
         }
         .file-name {
             font-weight: bold;
-            color: #2c3e50;
+            color: var(--heading-color);
             margin-bottom: 5px;
         }
         .file-details {
-            color: #7f8c8d;
+            color: var(--muted-text);
             font-size: 14px;
         }
         audio {
             width: 100%;
             margin-top: 15px;
+            border-radius: 5px;
+            background-color: var(--secondary-color);
         }
         .controls {
             display: flex;
@@ -87,7 +173,7 @@
             margin-top: 15px;
         }
         .control-btn {
-            background-color: #2c3e50;
+            background-color: var(--secondary-color);
             color: white;
             border: none;
             border-radius: 5px;
@@ -97,11 +183,11 @@
             transition: background-color 0.3s ease;
         }
         .control-btn:hover {
-            background-color: #1a252f;
+            background-color: var(--secondary-hover);
         }
         .visualizer-container {
             height: 120px;
-            background-color: #2c3e50;
+            background-color: var(--visualizer-bg);
             border-radius: 5px;
             overflow: hidden;
             margin: 20px 0;
@@ -115,10 +201,19 @@
 </head>
 <body>
     <div class="container">
-        <h1>Mini MP3 player</h1>
+        <div class="theme-switch-container">
+            <span class="theme-icon">☀️</span>
+            <label class="theme-switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+            <span class="theme-icon">🌙</span>
+        </div>
+        
+        <h1>MP3 Player</h1>
         
         <div class="upload-container" id="drop-area">
-            <p>Drop your MP3 file here</p>
+            <p>Drop your MP3 file here or</p>
             <input type="file" id="file-input" accept="audio/mp3">
             <button class="upload-btn" onclick="document.getElementById('file-input').click()">Choose File</button>
             <p id="file-status">No file selected</p>
@@ -158,6 +253,7 @@
         const stopBtn = document.getElementById('stop-btn');
         const canvas = document.getElementById('visualizer');
         const canvasCtx = canvas.getContext('2d');
+        const themeToggle = document.getElementById('theme-toggle');
         
         let audioContext;
         let analyser;
@@ -206,6 +302,26 @@
         });
         
         audioPlayer.addEventListener('play', setupAudioContext);
+        
+        // Theme toggling
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // Check for saved theme preference or prefer-color-scheme
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeToggle.checked = true;
+        }
         
         // Helper Functions
         function handleFileUpload(file) {
@@ -260,7 +376,7 @@
                 
                 analyser.getByteFrequencyData(dataArray);
                 
-                canvasCtx.fillStyle = '#2c3e50';
+                canvasCtx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--visualizer-bg');
                 canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
                 
                 const barWidth = (canvas.width / bufferLength) * 2.5;
@@ -270,7 +386,12 @@
                 for (let i = 0; i < bufferLength; i++) {
                     barHeight = dataArray[i] / 2;
                     
-                    canvasCtx.fillStyle = `rgb(${barHeight + 100}, 134, 219)`;
+                    // Different color schemes based on theme
+                    if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                        canvasCtx.fillStyle = `rgb(${barHeight + 80}, ${barHeight + 100}, ${barHeight + 160})`;
+                    } else {
+                        canvasCtx.fillStyle = `rgb(${barHeight + 100}, 134, 219)`;
+                    }
                     canvasCtx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
                     
                     x += barWidth + 1;
